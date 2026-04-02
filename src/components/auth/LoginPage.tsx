@@ -26,8 +26,8 @@ export function LoginPage({ onBack, onGoSignup, onLogin }: LoginPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white px-4 py-6 sm:py-10 flex items-center">
-      <div className="mx-auto w-full max-w-md rounded-3xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white px-5 py-10 sm:px-8 sm:py-14 flex items-center">
+      <div className="mx-auto w-full max-w-md rounded-3xl border border-gray-100 bg-white p-7 shadow-sm sm:p-9">
         <button
           type="button"
           className="mb-5 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"

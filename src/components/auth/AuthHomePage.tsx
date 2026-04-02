@@ -8,9 +8,9 @@ interface AuthHomePageProps {
 
 export function AuthHomePage({ onLoginClick, onSignupClick }: AuthHomePageProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-green-50 px-4 py-6 sm:py-10 flex items-center">
-      <div className="mx-auto grid w-full max-w-5xl gap-4 lg:grid-cols-2 lg:gap-6">
-        <section className="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-8">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-green-50 px-5 py-10 sm:px-8 sm:py-14 flex items-center">
+      <div className="mx-auto grid w-full max-w-5xl gap-5 lg:grid-cols-2 lg:gap-7">
+        <section className="rounded-3xl border border-blue-100 bg-white p-7 shadow-sm sm:p-9">
           <div className="mb-5 flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
               <Dog className="h-6 w-6 text-[#3457D5]" />
@@ -41,7 +41,7 @@ export function AuthHomePage({ onLoginClick, onSignupClick }: AuthHomePageProps)
           </div>
         </section>
 
-        <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8">
+        <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm sm:p-9">
           <h2 className="text-xl font-semibold text-gray-900">Get Started</h2>
           <p className="mt-1 text-sm text-gray-600">Continue with your account to open the app.</p>
 
