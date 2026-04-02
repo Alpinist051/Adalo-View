@@ -12,8 +12,10 @@ import { EnhancedWalkingTracker } from './components/walking/EnhancedWalkingTrac
 import { FindPage } from './components/find/FindPage';
 import { PetFriendlyMap } from './components/map/PetFriendlyMap';
 import { CompactWalkingBar } from './components/feed/CompactWalkingBar';
-import { Dialog, DialogContent } from './components/ui/dialog';
-import { PawPrint, Activity, Dog } from 'lucide-react';
+import { AuthHomePage } from './components/auth/AuthHomePage';
+import { LoginPage } from './components/auth/LoginPage';
+import { SignupPage } from './components/auth/SignupPage';
+import { Dog, LogOut } from 'lucide-react';
 import { Button } from './components/ui/button';
 
 // Mock data
@@ -113,7 +115,7 @@ const currentUser = {
   ],
 };
 
-export default function App() {
+function AuthenticatedApp({ onLogout, viewerName }: { onLogout: () => void; viewerName: string }) {
   const [activeTab, setActiveTab] = useState('home');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showWalkingTracker, setShowWalkingTracker] = useState(false);
@@ -376,7 +378,7 @@ export default function App() {
       const userPosts = mockPosts.filter(post => post.username === viewingProfile.username);
       
       return (
-        <div className="pb-2 max-w-md mx-auto">
+        <div className="mx-auto w-full max-w-lg pb-3">
           <ViewOtherProfile
             username={viewingProfile.username}
             avatar={viewingProfile.avatar}
@@ -398,13 +400,27 @@ export default function App() {
     switch (activeTab) {
       case 'home':
         return (
-          <div className="pb-2 bg-gray-50 min-h-screen">
+          <div className="min-h-screen bg-gray-50 pb-3">
             {/* Header with logo and title */}
             <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
-              <div className="max-w-md mx-auto">
-                <div className="h-14 flex items-center gap-2 px-4 border-b border-gray-100">
-                  <Dog className="w-6 h-6 text-[#3457D5]" />
-                  <h1 className="text-xl font-bold text-gray-900">Pawchio</h1>
+              <div className="mx-auto w-full max-w-lg">
+                <div className="h-14 flex items-center justify-between px-4 border-b border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <Dog className="w-6 h-6 text-[#3457D5]" />
+                    <h1 className="text-xl font-bold text-gray-900">Pawchio</h1>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="max-w-24 truncate text-xs font-medium text-gray-500">{viewerName}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-gray-500 hover:text-gray-900"
+                      onClick={onLogout}
+                      aria-label="Logout"
+                    >
+                      <LogOut className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -423,7 +439,7 @@ export default function App() {
               />
             </div>
 
-            <div className="max-w-md mx-auto pt-2">
+            <div className="mx-auto w-full max-w-lg px-1 pt-2">
               {/* Feed with floating cards */}
               {mockPosts.map((post) => (
                 <PostCard key={post.id} post={post} onAvatarClick={handleAvatarClick} />
@@ -434,35 +450,35 @@ export default function App() {
 
       case 'find':
         return (
-          <div className="pb-2 max-w-md mx-auto">
+          <div className="mx-auto w-full max-w-lg pb-3">
             <FindPage />
           </div>
         );
 
       case 'map':
         return (
-          <div className="pb-2 max-w-md mx-auto">
+          <div className="mx-auto w-full max-w-lg pb-3">
             <PetFriendlyMap />
           </div>
         );
 
       case 'search':
         return (
-          <div className="pb-2 max-w-md mx-auto">
+          <div className="mx-auto w-full max-w-lg pb-3">
             <SearchTab posts={mockPosts} />
           </div>
         );
 
       case 'notifications':
         return (
-          <div className="pb-2 max-w-md mx-auto">
+          <div className="mx-auto w-full max-w-lg pb-3">
             <NotificationsTab />
           </div>
         );
 
       case 'profile':
         return (
-          <div className="pb-2 max-w-md mx-auto">
+          <div className="mx-auto w-full max-w-lg pb-3">
             <EnhancedProfile
               username={currentUser.username}
               avatar={currentUser.avatar}
@@ -484,7 +500,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 via-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-green-50 via-blue-50 to-white px-3 sm:px-4">
       {renderContent()}
       
       <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
@@ -498,4 +514,53 @@ export default function App() {
       )}
     </div>
   );
+}
+
+type AuthView = 'home' | 'login' | 'signup' | 'app';
+
+export default function App() {
+  const [authView, setAuthView] = useState<AuthView>('home');
+  const [viewerName, setViewerName] = useState('Pet Friend');
+
+  const goToApp = (name: string) => {
+    const cleanName = name.trim();
+    setViewerName(cleanName || 'Pet Friend');
+    setAuthView('app');
+    window.scrollTo(0, 0);
+  };
+
+  const handleLogin = ({ email }: { email: string; password: string }) => {
+    const fallbackName = email.split('@')[0]?.replace(/[._-]/g, ' ') || 'Pet Friend';
+    goToApp(fallbackName);
+  };
+
+  const handleSignup = ({ fullName }: { fullName: string; email: string; password: string }) => {
+    goToApp(fullName);
+  };
+
+  if (authView === 'home') {
+    return <AuthHomePage onLoginClick={() => setAuthView('login')} onSignupClick={() => setAuthView('signup')} />;
+  }
+
+  if (authView === 'login') {
+    return (
+      <LoginPage
+        onBack={() => setAuthView('home')}
+        onGoSignup={() => setAuthView('signup')}
+        onLogin={handleLogin}
+      />
+    );
+  }
+
+  if (authView === 'signup') {
+    return (
+      <SignupPage
+        onBack={() => setAuthView('home')}
+        onGoLogin={() => setAuthView('login')}
+        onSignup={handleSignup}
+      />
+    );
+  }
+
+  return <AuthenticatedApp onLogout={() => setAuthView('home')} viewerName={viewerName} />;
 }
