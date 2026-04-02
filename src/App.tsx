@@ -400,15 +400,18 @@ export default function App() {
         return (
           <div className="pb-20 bg-gray-50 min-h-screen">
             {/* Header with logo and title */}
-            <div className="bg-white sticky top-0 z-10 shadow-sm">
-              <div className="h-14 flex items-center gap-2 px-4 border-b border-gray-100">
-                <Dog className="w-6 h-6 text-[#3457D5]" />
-                <h1 className="text-xl font-bold text-gray-900">Pawchio</h1>
+            <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
+              <div className="max-w-md mx-auto">
+                <div className="h-14 flex items-center gap-2 px-4 border-b border-gray-100">
+                  <Dog className="w-6 h-6 text-[#3457D5]" />
+                  <h1 className="text-xl font-bold text-gray-900">Pawchio</h1>
+                </div>
               </div>
             </div>
+            <div className="h-14" />
 
             {/* Compact Walking Bar - now below header */}
-            <div className="sticky top-14 z-10">
+            <div className="sticky top-14 z-40">
               <CompactWalkingBar
                 todayDistance={3.2}
                 lifetimeDistance={128.4}
