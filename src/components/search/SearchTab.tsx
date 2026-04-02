@@ -1,6 +1,7 @@
 import { Search } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Post } from '../feed/PostCard';
+import { useMemo, useState } from 'react';
 
 interface SearchTabProps {
   posts: Post[];
@@ -8,6 +9,19 @@ interface SearchTabProps {
 }
 
 export function SearchTab({ posts, onPostClick }: SearchTabProps) {
+  const [query, setQuery] = useState('');
+
+  const filteredPosts = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    if (!normalized) {
+      return posts;
+    }
+
+    return posts.filter((post) =>
+      `${post.username} ${post.petName} ${post.caption}`.toLowerCase().includes(normalized),
+    );
+  }, [posts, query]);
+
   return (
     <div className="bg-white min-h-screen">
       {/* Search Bar */}
@@ -18,13 +32,15 @@ export function SearchTab({ posts, onPostClick }: SearchTabProps) {
             type="text"
             placeholder="Search pets, owners, breeds..."
             className="pl-10"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
           />
         </div>
       </div>
 
       {/* Explore Grid */}
       <div className="grid grid-cols-3 gap-1">
-        {posts.map((post) => (
+        {filteredPosts.map((post) => (
           <div
             key={post.id}
             className="aspect-square bg-gray-100 cursor-pointer relative"
@@ -38,6 +54,9 @@ export function SearchTab({ posts, onPostClick }: SearchTabProps) {
           </div>
         ))}
       </div>
+      {filteredPosts.length === 0 && (
+        <p className="p-6 text-center text-sm text-gray-500">No results found for "{query}".</p>
+      )}
     </div>
   );
 }

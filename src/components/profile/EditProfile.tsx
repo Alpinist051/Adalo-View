@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { ArrowLeft, Camera, Plus, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -42,6 +42,8 @@ export function EditProfile({
   onBack,
   onSave,
 }: EditProfileProps) {
+  const [profileAvatar, setProfileAvatar] = useState(avatar);
+  const profilePhotoInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     username,
     bio,
@@ -51,8 +53,47 @@ export function EditProfile({
   });
 
   const handleSave = () => {
-    onSave(formData);
+    onSave({ ...formData, avatar: profileAvatar });
     onBack();
+  };
+
+  const handleAddPet = () => {
+    setFormData((prev) => ({
+      ...prev,
+      pets: [
+        ...prev.pets,
+        {
+          id: Date.now().toString(),
+          name: '',
+          breed: '',
+          age: '',
+          image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=300&q=80',
+          bio: '',
+        },
+      ],
+    }));
+  };
+
+  const handleRemovePet = (petId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      pets: prev.pets.filter((pet) => pet.id !== petId),
+    }));
+  };
+
+  const handleProfilePhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setProfileAvatar(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -79,12 +120,22 @@ export function EditProfile({
         <div className="flex flex-col items-center gap-3">
           <div className="relative">
             <Avatar className="w-24 h-24 border-2 border-[#3457D5]">
-              <AvatarImage src={avatar} alt={username} />
+              <AvatarImage src={profileAvatar} alt={username} />
               <AvatarFallback>{username[0]}</AvatarFallback>
             </Avatar>
-            <button className="absolute bottom-0 right-0 w-8 h-8 bg-[#3457D5] rounded-full flex items-center justify-center shadow-lg">
+            <button
+              className="absolute bottom-0 right-0 w-8 h-8 bg-[#3457D5] rounded-full flex items-center justify-center shadow-lg"
+              onClick={() => profilePhotoInputRef.current?.click()}
+            >
               <Camera className="w-4 h-4 text-white" />
             </button>
+            <input
+              ref={profilePhotoInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleProfilePhotoChange}
+            />
           </div>
           <p className="text-sm text-[#3457D5] font-medium">Change Profile Photo</p>
         </div>
@@ -200,6 +251,7 @@ export function EditProfile({
               size="sm" 
               variant="outline" 
               className="border-[#3457D5] text-[#3457D5] hover:bg-[#3457D5]/10"
+              onClick={handleAddPet}
             >
               <Plus className="w-4 h-4 mr-1" />
               Add Pet
@@ -217,7 +269,10 @@ export function EditProfile({
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <button className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                    <button
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center"
+                      onClick={() => handleRemovePet(pet.id)}
+                    >
                       <X className="w-3 h-3 text-white" />
                     </button>
                   </div>

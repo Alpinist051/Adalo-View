@@ -116,6 +116,7 @@ const currentUser = {
 };
 
 function AuthenticatedApp({ onLogout, viewerName }: { onLogout: () => void; viewerName: string }) {
+  const [posts, setPosts] = useState<Post[]>(mockPosts);
   const [activeTab, setActiveTab] = useState('home');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showWalkingTracker, setShowWalkingTracker] = useState(false);
@@ -363,10 +364,7 @@ function AuthenticatedApp({ onLogout, viewerName }: { onLogout: () => void; view
             company: 'Tech Company Inc.'
           }}
           onBack={() => setShowEditProfile(false)}
-          onSave={(data) => {
-            console.log('Profile updated:', data);
-            // Here you would update the user data
-          }}
+          onSave={() => {}}
         />
       );
     }
@@ -375,7 +373,7 @@ function AuthenticatedApp({ onLogout, viewerName }: { onLogout: () => void; view
     if (viewingProfile) {
       const profileData = getProfileData(viewingProfile.username, viewingProfile.avatar);
       // Filter posts by the user we're viewing
-      const userPosts = mockPosts.filter(post => post.username === viewingProfile.username);
+      const userPosts = posts.filter(post => post.username === viewingProfile.username);
       
       return (
         <div className="mx-auto w-full max-w-lg pb-3">
@@ -441,7 +439,7 @@ function AuthenticatedApp({ onLogout, viewerName }: { onLogout: () => void; view
 
             <div className="mx-auto w-full max-w-lg px-1 pt-2">
               {/* Feed with floating cards */}
-              {mockPosts.map((post) => (
+              {posts.map((post) => (
                 <PostCard key={post.id} post={post} onAvatarClick={handleAvatarClick} />
               ))}
             </div>
@@ -465,7 +463,7 @@ function AuthenticatedApp({ onLogout, viewerName }: { onLogout: () => void; view
       case 'search':
         return (
           <div className="mx-auto w-full max-w-lg pb-3">
-            <SearchTab posts={mockPosts} />
+            <SearchTab posts={posts} />
           </div>
         );
 
@@ -490,7 +488,7 @@ function AuthenticatedApp({ onLogout, viewerName }: { onLogout: () => void; view
               isOwnProfile={true}
               onEditProfile={() => setShowEditProfile(true)}
             />
-            <ProfileGrid posts={mockPosts.slice(0, 6)} />
+            <ProfileGrid posts={posts.slice(0, 6)} />
           </div>
         );
 
@@ -510,6 +508,11 @@ function AuthenticatedApp({ onLogout, viewerName }: { onLogout: () => void; view
           onClose={() => setShowCreateModal(false)}
           username={currentUser.username}
           userAvatar={currentUser.avatar}
+          onCreatePost={(post) => {
+            setPosts((prev) => [post, ...prev]);
+            setShowCreateModal(false);
+            setActiveTab('home');
+          }}
         />
       )}
     </div>

@@ -6,6 +6,7 @@ import { Badge } from '../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { WalkingStatsProfile } from './WalkingStatsProfile';
 import { EducationCareerScroll } from './EducationCareerScroll';
+import { useState } from 'react';
 
 interface Pet {
   id: string;
@@ -39,6 +40,17 @@ export function EnhancedProfile({
   isOwnProfile = true,
   onEditProfile,
 }: EnhancedProfileProps) {
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  const copyProfileLink = async () => {
+    const profileUrl = `${window.location.origin}/profile/${username}`;
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+    } catch {
+      // Clipboard may be unavailable in some webviews.
+    }
+  };
+
   return (
     <div className="bg-white min-h-screen">
       {/* Top Bar */}
@@ -46,15 +58,15 @@ export function EnhancedProfile({
         <h1 className="font-semibold text-lg">{username}</h1>
         <div className="flex gap-2">
           {isOwnProfile ? (
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={onEditProfile}>
               <Settings className="w-5 h-5" />
             </Button>
           ) : (
             <>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={copyProfileLink}>
                 <Share2 className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={() => (window.location.href = `mailto:${username}@pawchio.app`)}>
                 <MessageCircle className="w-5 h-5" />
               </Button>
             </>
@@ -111,16 +123,23 @@ export function EnhancedProfile({
               <Button variant="outline" className="flex-1 border-[#3457D5]/20" onClick={onEditProfile}>
                 Edit Profile
               </Button>
-              <Button variant="outline" className="flex-1 border-[#3457D5]/20">
+              <Button variant="outline" className="flex-1 border-[#3457D5]/20" onClick={copyProfileLink}>
                 Share Profile
               </Button>
             </>
           ) : (
             <>
-              <Button className="flex-1 bg-[#3457D5] hover:bg-[#2A47B0]">
-                Follow
+              <Button
+                className={`flex-1 ${isFollowing ? 'bg-gray-300 text-gray-900 hover:bg-gray-400' : 'bg-[#3457D5] hover:bg-[#2A47B0]'}`}
+                onClick={() => setIsFollowing((prev) => !prev)}
+              >
+                {isFollowing ? 'Following' : 'Follow'}
               </Button>
-              <Button variant="outline" className="flex-1 border-[#3457D5]/20">
+              <Button
+                variant="outline"
+                className="flex-1 border-[#3457D5]/20"
+                onClick={() => (window.location.href = `mailto:${username}@pawchio.app`)}
+              >
                 Message
               </Button>
             </>

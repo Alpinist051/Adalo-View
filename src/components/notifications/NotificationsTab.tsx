@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Button } from '../ui/button';
+import { useState } from 'react';
 
 interface Notification {
   id: string;
@@ -50,6 +51,20 @@ const mockNotifications: Notification[] = [
 ];
 
 export function NotificationsTab() {
+  const [followedUsers, setFollowedUsers] = useState<Set<string>>(new Set());
+
+  const toggleFollow = (username: string) => {
+    setFollowedUsers((prev) => {
+      const next = new Set(prev);
+      if (next.has(username)) {
+        next.delete(username);
+      } else {
+        next.add(username);
+      }
+      return next;
+    });
+  };
+
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
@@ -79,8 +94,12 @@ export function NotificationsTab() {
                 className="w-11 h-11 object-cover"
               />
             ) : (
-              <Button variant="outline" size="sm">
-                Follow
+              <Button
+                variant={followedUsers.has(notification.username) ? 'secondary' : 'outline'}
+                size="sm"
+                onClick={() => toggleFollow(notification.username)}
+              >
+                {followedUsers.has(notification.username) ? 'Following' : 'Follow'}
               </Button>
             )}
           </div>

@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { WalkingStatsProfile } from './WalkingStatsProfile';
 import { EducationCareerScroll } from './EducationCareerScroll';
 import { ProfileGrid } from './ProfileGrid';
+import { useState } from 'react';
 
 interface Pet {
   id: string;
@@ -53,6 +54,17 @@ export function ViewOtherProfile({
   education,
   occupation,
 }: ViewOtherProfileProps) {
+  const [followingState, setFollowingState] = useState(isFollowing);
+
+  const copyProfileLink = async () => {
+    const profileUrl = `${window.location.origin}/profile/${username}`;
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+    } catch {
+      // Clipboard may be unavailable in some webviews.
+    }
+  };
+
   return (
     <div className="bg-white min-h-screen">
       {/* Top Bar */}
@@ -66,7 +78,7 @@ export function ViewOtherProfile({
           <h1 className="font-semibold text-lg">{username}</h1>
         </div>
         <div className="flex gap-2">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" onClick={copyProfileLink}>
             <Share2 className="w-5 h-5" />
           </Button>
         </div>
@@ -111,11 +123,16 @@ export function ViewOtherProfile({
         {/* Action Buttons - Follow/Message */}
         <div className="flex gap-2 mb-4">
           <Button 
-            className={`flex-1 ${isFollowing ? 'bg-gray-200 text-gray-900 hover:bg-gray-300' : 'bg-[#3457D5] hover:bg-[#2A47B0]'}`}
+            className={`flex-1 ${followingState ? 'bg-gray-200 text-gray-900 hover:bg-gray-300' : 'bg-[#3457D5] hover:bg-[#2A47B0]'}`}
+            onClick={() => setFollowingState((prev) => !prev)}
           >
-            {isFollowing ? 'Following' : 'Follow'}
+            {followingState ? 'Following' : 'Follow'}
           </Button>
-          <Button variant="outline" className="flex-1 border-[#3457D5]/20 text-[#3457D5]">
+          <Button
+            variant="outline"
+            className="flex-1 border-[#3457D5]/20 text-[#3457D5]"
+            onClick={() => (window.location.href = `mailto:${username}@pawchio.app`)}
+          >
             <MessageCircle className="w-4 h-4 mr-1" />
             Message
           </Button>
