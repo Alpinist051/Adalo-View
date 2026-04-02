@@ -119,7 +119,8 @@ export default function App() {
   const [showWalkingTracker, setShowWalkingTracker] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [isWalkingBarCollapsed, setIsWalkingBarCollapsed] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
+  const isWalkingBarCollapsedRef = useRef(false);
   const feedRef = useRef<HTMLDivElement>(null);
   const [viewingProfile, setViewingProfile] = useState<{username: string; avatar: string} | null>(null);
 
@@ -127,21 +128,26 @@ export default function App() {
   useEffect(() => {
     if (activeTab !== 'home') {
       setIsWalkingBarCollapsed(false);
+      isWalkingBarCollapsedRef.current = false;
       return;
     }
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      const scrollingDown = currentScrollY > lastScrollY;
-      
-      // Collapse bar when scrolling down past 100px
-      if (currentScrollY > 100 && scrollingDown) {
+      const scrollingDown = currentScrollY > lastScrollYRef.current;
+      const shouldCollapse = currentScrollY > 140 && scrollingDown;
+      const shouldExpand = currentScrollY < 80 || !scrollingDown;
+
+      // Use hysteresis to avoid rapid collapse/expand flicker around the threshold.
+      if (shouldCollapse && !isWalkingBarCollapsedRef.current) {
         setIsWalkingBarCollapsed(true);
-      } else if (currentScrollY < 100 || !scrollingDown) {
+        isWalkingBarCollapsedRef.current = true;
+      } else if (shouldExpand && isWalkingBarCollapsedRef.current) {
         setIsWalkingBarCollapsed(false);
+        isWalkingBarCollapsedRef.current = false;
       }
-      
-      setLastScrollY(currentScrollY);
+
+      lastScrollYRef.current = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -149,7 +155,7 @@ export default function App() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [activeTab, lastScrollY]);
+  }, [activeTab]);
 
   const handleTabChange = (tab: string) => {
     if (tab === 'create') {
@@ -396,14 +402,14 @@ export default function App() {
           <div className="pb-20 bg-gray-50 min-h-screen">
             {/* Header with logo and title */}
             <div className="bg-white sticky top-0 z-10 shadow-sm">
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
+              <div className="h-14 flex items-center gap-2 px-4 border-b border-gray-100">
                 <Dog className="w-6 h-6 text-[#3457D5]" />
                 <h1 className="text-xl font-bold text-gray-900">Pawchio</h1>
               </div>
             </div>
 
             {/* Compact Walking Bar - now below header */}
-            <div className="sticky top-[52px] z-10">
+            <div className="sticky top-14 z-10">
               <CompactWalkingBar
                 todayDistance={3.2}
                 lifetimeDistance={128.4}
