@@ -121,7 +121,7 @@ export default function App() {
   const [isWalkingBarCollapsed, setIsWalkingBarCollapsed] = useState(false);
   const lastScrollYRef = useRef(0);
   const isWalkingBarCollapsedRef = useRef(false);
-  const feedRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [viewingProfile, setViewingProfile] = useState<{username: string; avatar: string} | null>(null);
 
   // Handle scroll to collapse walking bar
@@ -132,8 +132,13 @@ export default function App() {
       return;
     }
 
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) {
+      return;
+    }
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+      const currentScrollY = scrollContainer.scrollTop;
       const scrollingDown = currentScrollY > lastScrollYRef.current;
       const shouldCollapse = currentScrollY > 140 && scrollingDown;
       const shouldExpand = currentScrollY < 80 || !scrollingDown;
@@ -150,10 +155,10 @@ export default function App() {
       lastScrollYRef.current = currentScrollY;
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
     
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      scrollContainer.removeEventListener('scroll', handleScroll);
     };
   }, [activeTab]);
 
@@ -482,10 +487,14 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 via-blue-50 to-white">
-      {renderContent()}
-      
-      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+    <div className="h-[100dvh] w-full overflow-hidden bg-gradient-to-b from-green-50 via-blue-50 to-white">
+      <div className="relative mx-auto h-full w-full max-w-md">
+        <main ref={scrollContainerRef} className="h-full overflow-y-auto">
+          {renderContent()}
+        </main>
+        
+        <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+      </div>
 
       {showCreateModal && (
         <CreatePostModal
