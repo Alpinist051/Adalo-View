@@ -56,7 +56,7 @@ export function EditProfile({
   };
 
   return (
-    <div className="bg-white min-h-screen pb-20">
+    <div className="bg-white min-h-screen pb-2">
       {/* Header */}
       <div className="sticky top-0 bg-white z-10 border-b border-gray-200">
         <div className="flex items-center justify-between p-4">

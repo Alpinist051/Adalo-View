@@ -376,7 +376,7 @@ export default function App() {
       const userPosts = mockPosts.filter(post => post.username === viewingProfile.username);
       
       return (
-        <div className="pb-20 max-w-md mx-auto">
+        <div className="pb-2 max-w-md mx-auto">
           <ViewOtherProfile
             username={viewingProfile.username}
             avatar={viewingProfile.avatar}
@@ -398,7 +398,7 @@ export default function App() {
     switch (activeTab) {
       case 'home':
         return (
-          <div className="pb-20 bg-gray-50 min-h-screen">
+          <div className="pb-2 bg-gray-50 min-h-screen">
             {/* Header with logo and title */}
             <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
               <div className="max-w-md mx-auto">
@@ -434,35 +434,35 @@ export default function App() {
 
       case 'find':
         return (
-          <div className="pb-20 max-w-md mx-auto">
+          <div className="pb-2 max-w-md mx-auto">
             <FindPage />
           </div>
         );
 
       case 'map':
         return (
-          <div className="pb-20 max-w-md mx-auto">
+          <div className="pb-2 max-w-md mx-auto">
             <PetFriendlyMap />
           </div>
         );
 
       case 'search':
         return (
-          <div className="pb-20 max-w-md mx-auto">
+          <div className="pb-2 max-w-md mx-auto">
             <SearchTab posts={mockPosts} />
           </div>
         );
 
       case 'notifications':
         return (
-          <div className="pb-20 max-w-md mx-auto">
+          <div className="pb-2 max-w-md mx-auto">
             <NotificationsTab />
           </div>
         );
 
       case 'profile':
         return (
-          <div className="pb-20 max-w-md mx-auto">
+          <div className="pb-2 max-w-md mx-auto">
             <EnhancedProfile
               username={currentUser.username}
               avatar={currentUser.avatar}
